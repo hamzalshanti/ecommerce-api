@@ -33,10 +33,11 @@ app.use((req, res, next) => {
 });
 
 app.use((error, req, res, next) => {
-  error.statusCode = 500;
-  res.status(error.statusCode).json({
-    message: error.message,
-  });
+  // error.statusCode = 500;
+  // res.status(error.statusCode).json({
+  //   message: error.message,
+  // });
+  console.log(error);
 });
 
 const PORT = process.env.PORT || 2020;

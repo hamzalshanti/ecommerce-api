@@ -31,6 +31,20 @@ const getOneProduct = async function (req, res, next) {
 
 const createProduct = async function (req, res, next) {
   try {
+    const productServicesInstance = new ProductServices(Product);
+    const product = await productServicesInstance.create({
+      ...(await productServicesInstance.getImages(
+        req.files['gallary'],
+        req.files['mainImage']
+      )),
+      ...req.body,
+    });
+    if (product)
+      return res.status(201).json({
+        message: 'Created successfully',
+        product: product,
+      });
+    return res.status(200).json(product);
   } catch (err) {
     next(err);
   }

@@ -7,7 +7,7 @@ const {
   modifyProduct,
 } = require('../controllers/productController');
 
-const uploader = require('../../middlewares/multerMiddleware');
+const uploader = require('../middlewares/multerMiddleware');
 const upload = uploader.fields([
   {
     name: 'mainImage',
