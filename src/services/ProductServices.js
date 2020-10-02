@@ -6,31 +6,6 @@ class ProductServices {
   constructor(Product) {
     this.Product = Product;
   }
-  async create({
-    name,
-    description,
-    category,
-    qty,
-    price,
-    discount,
-    mainImage,
-    gallary,
-    createdBy,
-  }) {
-    const product = await this.Product.create({
-      name,
-      description,
-      category,
-      qty,
-      price,
-      discount,
-      mainImage,
-      gallary,
-      createdBy,
-    });
-    if (!product) return false;
-    return product;
-  }
   async getAll() {
     const products = await this.Product.find().select({
       name: 1,
@@ -54,33 +29,48 @@ class ProductServices {
     if (products) return false;
     return product;
   }
-  async getImages(gallaryFiles, mainImageFile) {
-    const parser = new DatauriParser();
-    let gallary = [];
-    let mainImage = '';
-    let content = '';
+  async create(data) {
+    const product = await this.Product.create(data);
+    if (!product) return false;
+    return product;
+  }
+  async modify(id, data) {
+    const product = await this.Product.findByIdAndUpdate(id, data, {
+      new: true,
+    });
+    if (!product) return false;
+    return product;
+  }
+  async getGallaryUrls(gallaryFiles) {
     if (gallaryFiles)
-      if (gallaryFiles.length > 0)
-        gallary = await Promise.all(
-          gallaryFiles.map(async (file) => {
-            content = parser.format(
-              path.extname(file.originalname),
-              file.buffer
-            ).content;
-            const result = await cloudinary.uploader.upload(content);
-            return result.secure_url;
-          })
-        );
+      if (gallaryFiles.length > 0) {
+        const parser = new DatauriParser();
+        return {
+          gallary: await Promise.all(
+            gallaryFiles.map(async (file) => {
+              const content = parser.format(
+                path.extname(file.originalname),
+                file.buffer
+              ).content;
+              const result = await cloudinary.uploader.upload(content);
+              return result.secure_url;
+            })
+          ),
+        };
+      }
+  }
+  async getMianImageUrl(mainImageFile) {
     if (mainImageFile)
       if (mainImageFile.length > 0) {
-        content = parser.format(
+        const parser = new DatauriParser();
+        const content = parser.format(
           path.extname(mainImageFile[0].originalname),
           mainImageFile[0].buffer
         ).content;
         const result = await cloudinary.uploader.upload(content);
-        mainImage = result.secure_url;
+        return { mainImage: result.secure_url };
       }
-    return { mainImage, gallary };
   }
 }
+
 module.exports = ProductServices;

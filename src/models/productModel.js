@@ -48,7 +48,7 @@ const productSchema = mongoose.Schema(
     tags: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'tag',
+        ref: 'Tag',
       },
     ],
     createdBy: {
